@@ -3,8 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>학생 ERP system</title>
+    <script>
+        async function goList(question) {
+            await fetch(`http://localhost:8081/chat?question=${encodeURIComponent(question)}`)
+                .then(res => {
+                    if (res.ok) {
+                        console.log(res)
+                        return res.json(); // JSON으로 파싱
+                    } else {
+                        throw new Error("네트워크 응답이 올바르지 않습니다.");
+                    }
+                })
+                .then(data => {
+                    let list = document.getElementById('list');
+                    let html = "<table border='1'>";
+
+                    // table head
+                    html += "<thead>";
+                    html += "<tr>";
+                    html += "<th style='padding-right: 15px; padding-left: 15px'>name</th>";
+                    html += "<th style='padding-right: 15px; padding-left: 15px'>school</th>";
+                    html += "<th style='padding-right: 15px; padding-left: 15px'>email</th>";
+                    html += "</tr>";
+                    html += "</thead>";
+
+                    // table body
+                    html += "<tbody>";
+
+                    data.map(({name, school, email}, index) => {
+                        html += `
+                            <tr>
+                                <td style='padding-right: 15px; padding-left: 15px'>${name}</td>
+                                <td style='padding-right: 15px; padding-left: 15px'>${school}</td>
+                                <td style='padding-right: 15px; padding-left: 15px'>${email}</td>
+                            </tr>
+                        `;
+                    })
+
+                    html += "</tbody>";
+
+                    html += "</table>";
+
+
+                    list.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error("에러 발생:", error);
+                });
+        }
+
+
+    </script>
 </head>
 <body>
     학생 ERP system
+    <button onClick="goList(document.getElementById('question').value)" >학생목록 가져오기</button>
+    <hr />
+    <input id="question" placeholder="질문" />
+    <div id="list">
+        여기에 학생 목록 출력
+    </div>
 </body>
 </html>
